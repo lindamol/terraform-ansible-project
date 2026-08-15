@@ -618,8 +618,3 @@ The final implementation successfully demonstrates:
 - Non-interactive automated provisioning
 
 ---
-
-## Author
-
-**Humber ID:** n01276909  
-**Course:** CCGC 5502 Automation
