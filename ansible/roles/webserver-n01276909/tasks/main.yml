@@ -1,0 +1,30 @@
+---
+- name: Install Apache web server
+  ansible.builtin.package:
+    name: "{{ web_package }}"
+    state: present
+  notify: Restart and enable Apache
+
+- name: Allow HTTP service through firewalld
+  ansible.posix.firewalld:
+    service: http
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: Create VM-specific HTML file on automation machine
+  ansible.builtin.copy:
+    content: "{{ node_fqdn }}\n"
+    dest: "{{ playbook_dir }}/{{ web_local_file_prefix }}{{ vm_number }}.html"
+    mode: "0644"
+  delegate_to: localhost
+  become: false
+
+- name: Copy VM-specific page as index.html
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/{{ web_local_file_prefix }}{{ vm_number }}.html"
+    dest: "{{ web_document_root }}/{{ web_destination_file }}"
+    owner: root
+    group: root
+    mode: "{{ web_file_mode }}"
+  notify: Restart and enable Apache

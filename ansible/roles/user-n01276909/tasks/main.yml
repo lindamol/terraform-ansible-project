@@ -1,0 +1,64 @@
+---
+- name: Create cloud administrators group
+  ansible.builtin.group:
+    name: "{{ cloud_admin_group }}"
+    state: present
+
+- name: Create user accounts and generate SSH keys
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups:
+      - "{{ cloud_admin_group }}"
+      - "{{ sudo_group }}"
+    append: true
+    create_home: true
+    generate_ssh_key: true
+    ssh_key_type: "{{ ssh_key_type }}"
+    ssh_key_bits: "{{ ssh_key_bits }}"
+    ssh_key_file: "{{ ssh_key_file }}"
+    ssh_key_passphrase: ""
+    state: present
+  loop: "{{ managed_users }}"
+
+- name: Set SSH directory permissions
+  ansible.builtin.file:
+    path: "/home/{{ item }}/.ssh"
+    state: directory
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: "0700"
+  loop: "{{ managed_users }}"
+
+- name: Copy each generated public key to authorized_keys
+  ansible.builtin.copy:
+    src: "/home/{{ item }}/.ssh/id_rsa.pub"
+    dest: "/home/{{ item }}/.ssh/authorized_keys"
+    remote_src: true
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: "0600"
+  loop: "{{ managed_users }}"
+
+- name: Create local directory for downloaded SSH key
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/downloaded_keys"
+    state: directory
+    mode: "0700"
+  delegate_to: localhost
+  become: false
+  run_once: true
+
+- name: Download user100 private key from VM1
+  ansible.builtin.fetch:
+    src: "{{ private_key_source }}"
+    dest: "{{ private_key_destination }}"
+    flat: true
+  when: inventory_hostname == private_key_source_host
+
+- name: Set downloaded private key permissions
+  ansible.builtin.file:
+    path: "{{ private_key_destination }}"
+    mode: "0600"
+  delegate_to: localhost
+  become: false
+  when: inventory_hostname == private_key_source_host

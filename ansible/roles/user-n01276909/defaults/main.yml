@@ -1,0 +1,18 @@
+---
+cloud_admin_group: cloudadmins
+sudo_group: wheel
+
+managed_users:
+  - user100
+  - user200
+  - user300
+
+ssh_key_type: rsa
+ssh_key_bits: 2048
+ssh_key_file: .ssh/id_rsa
+
+private_key_user: user100
+private_key_source: /home/user100/.ssh/id_rsa
+private_key_destination: "{{ playbook_dir }}/downloaded_keys/user100_id_rsa"
+
+private_key_source_host: vm1

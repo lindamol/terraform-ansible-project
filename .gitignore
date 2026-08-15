@@ -1,0 +1,29 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+*.tfvars
+*.tfvars.json
+
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+.DS_Store
+
+# Ansible generated/private files
+ansible/downloaded_keys/
+ansible/vm*.html
+
+# Terraform plan files
+tfplan
+*.tfplan
+
+# Microsoft Word temporary files
+~$*.docx
+
+# Project report - keep local
+PROJECT_Report_Ansible.docx

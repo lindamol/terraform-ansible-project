@@ -1,0 +1,10 @@
+---
+- name: Add system-wide profile configuration
+  ansible.builtin.blockinfile:
+    path: "{{ profile_file }}"
+    insertafter: EOF
+    backup: true
+    marker: "# {mark} ANSIBLE MANAGED PROFILE BLOCK"
+    block: |
+      #Test block added by Ansible......{{ profile_username }}
+      export TMOUT={{ profile_timeout }}

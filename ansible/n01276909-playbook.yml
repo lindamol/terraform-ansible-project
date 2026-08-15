@@ -1,0 +1,11 @@
+---
+- name: Configure Linux virtual machines with Ansible
+  hosts: linux
+  become: true
+  gather_facts: true
+
+  roles:
+    - profile-n01276909
+    - user-n01276909
+    - datadisk-n01276909
+    - webserver-n01276909

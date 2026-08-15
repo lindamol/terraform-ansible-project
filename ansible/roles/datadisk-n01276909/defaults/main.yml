@@ -1,0 +1,29 @@
+---
+data_disk_device: /dev/disk/azure/scsi1/lun0
+data_disk_wait_timeout: 120
+
+data_disk_packages:
+  - parted
+  - xfsprogs
+  - e2fsprogs
+
+data_disk_partitions:
+  - number: 1
+    part_start: 1MiB
+    part_end: 4GiB
+    device: /dev/disk/azure/scsi1/lun0-part1
+    fstype: xfs
+    mount_point: /part1
+    mount_owner: root
+    mount_group: root
+    mount_mode: "0755"
+
+  - number: 2
+    part_start: 4GiB
+    part_end: 9GiB
+    device: /dev/disk/azure/scsi1/lun0-part2
+    fstype: ext4
+    mount_point: /part2
+    mount_owner: root
+    mount_group: root
+    mount_mode: "0755"

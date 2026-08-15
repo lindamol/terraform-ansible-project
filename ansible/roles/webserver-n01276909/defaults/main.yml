@@ -1,0 +1,7 @@
+---
+web_package: httpd
+web_service: httpd
+web_document_root: /var/www/html
+web_destination_file: index.html
+web_file_mode: "0444"
+web_local_file_prefix: vm

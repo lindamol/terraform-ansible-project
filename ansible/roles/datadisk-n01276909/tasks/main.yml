@@ -1,0 +1,46 @@
+---
+- name: Wait for the attached data disk to become available
+  ansible.builtin.wait_for:
+    path: "{{ data_disk_device }}"
+    state: present
+    timeout: "{{ data_disk_wait_timeout }}"
+
+- name: Install disk management packages
+  ansible.builtin.package:
+    name: "{{ data_disk_packages }}"
+    state: present
+
+- name: Create data disk partitions
+  community.general.parted:
+    device: "{{ data_disk_device }}"
+    number: "{{ item.number }}"
+    state: present
+    label: gpt
+    part_start: "{{ item.part_start }}"
+    part_end: "{{ item.part_end }}"
+  loop: "{{ data_disk_partitions }}"
+
+- name: Create filesystems on data disk partitions
+  community.general.filesystem:
+    fstype: "{{ item.fstype }}"
+    dev: "{{ item.device }}"
+    state: present
+  loop: "{{ data_disk_partitions }}"
+
+- name: Create mount point directories
+  ansible.builtin.file:
+    path: "{{ item.mount_point }}"
+    state: directory
+    owner: "{{ item.mount_owner }}"
+    group: "{{ item.mount_group }}"
+    mode: "{{ item.mount_mode }}"
+  loop: "{{ data_disk_partitions }}"
+
+- name: Persistently mount data disk partitions
+  ansible.posix.mount:
+    path: "{{ item.mount_point }}"
+    src: "{{ item.device }}"
+    fstype: "{{ item.fstype }}"
+    opts: defaults
+    state: mounted
+  loop: "{{ data_disk_partitions }}"
